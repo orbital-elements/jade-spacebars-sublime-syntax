@@ -1,0 +1,87 @@
+%YAML 1.2
+---
+name: Jade (Spacebars)
+file_extensions: [jade]
+scope: source.jade.spacebars
+variables:
+  ident: '[_$a-zA-Z][$\w]*'
+
+contexts:
+  main:
+    - match: ""
+      push: "scope:source.jade"
+      with_prototype:
+        - include: comments
+        - include: template
+        - match: "{{"
+          scope: spacebars.block.start
+          push: spacebars
+
+  spacebars:
+    - match: "}}"
+      scope: spacebars.block.end
+      pop: true
+    # - match: \b(if|else)\b
+    #   scope: spacebars.keyword.control
+
+    # XXX Use more dry aproach
+    # some="value"
+    - match: ({{ident}})(=)(")({{ident}})(")
+      scope: spacebars.keys.single
+      captures:
+        1:  spacebars.template.attribute
+        2:  keyword.operator.assignment
+        3:  string.quoted.jade
+        4:  arg.mixin.jade
+        5:  string.quoted.jade
+
+    # some='value'
+    - match: ({{ident}})(=)(')({{ident}})(')
+      scope: spacebars.keys.double
+      captures:
+        1:  spacebars.template.attribute
+        2:  keyword.operator.assignment
+        3:  string.quoted.jade
+        4:  arg.mixin.jade
+        5:  string.quoted.jade
+
+
+    # value
+    - match: '({{ident}})'
+      scope: spacebars.keyword.control
+    # # or /
+    - match: '(#|\/)'
+      scope: spacebars.hash
+
+
+  comments:
+    # Unbuffered (jade-only) comments.
+    - match: "^(\\s*)//-"
+      scope: comment.unbuffered.block.jade
+      push:
+        - meta_scope: comment.block.jade
+        - match: "^(?!(\\1\\s)|\\s*$)"
+          pop: true
+
+    # Buffered (html) comments.
+    - match: "^(\\s*)//"
+      scope: string.comment.buffered.block.jade
+      push:
+        - meta_scope: comment.block.jade
+        - match: "^(?!(\\1\\s)|\\s*$)"
+          pop: true
+    #XXX add: Buffered comments inside buffered comments will generate invalid html.
+
+  template:
+    #e.g. tamplate(name="myTemplate")
+    - match: '(?<!\.)(template)(\()(name)(=)(")([_$a-zA-Z][$\w]*)(")(\))'
+      scope: spacebars.template
+      captures:
+        2:  meta.brace.round.jade
+        3:  spacebars.template.attribute
+        4:  keyword.operator.assignment
+        5:  string.quoted.jade
+        6:  spacebars.template.name
+        7:  string.quoted.jade
+        8:  meta.brace.round
+

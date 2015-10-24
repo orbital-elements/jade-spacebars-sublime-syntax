@@ -2,7 +2,7 @@
 ---
 name: Jade (Spacebars)
 file_extensions: [jade]
-scope: source.jade.spacebars
+scope: text.jade.spacebars
 variables:
   ident: '[_$a-zA-Z][$\w]*'
 

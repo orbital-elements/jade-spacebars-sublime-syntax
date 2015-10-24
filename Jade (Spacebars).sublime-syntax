@@ -9,7 +9,7 @@ variables:
 contexts:
   main:
     - match: ""
-      push: "scope:source.jade"
+      push: "scope:text.jade"
       with_prototype:
         - include: comments
         - include: template

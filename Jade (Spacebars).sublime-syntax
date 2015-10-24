@@ -13,12 +13,12 @@ contexts:
       with_prototype:
         - include: comments
         - include: template
-        - match: "{{"
+        - match: "{{|#{"
           scope: spacebars.block.start
           push: spacebars
 
   spacebars:
-    - match: "}}"
+    - match: "}}|}"
       scope: spacebars.block.end
       pop: true
     # - match: \b(if|else)\b
